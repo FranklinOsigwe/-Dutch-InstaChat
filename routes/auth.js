@@ -13,7 +13,7 @@ const requireLogin = require('../middleware/requireLogin')
 router.post("/signup", (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !password || !name) {
-    return res.status(422).json({ error: "Please all the fields" });
+    return res.status(422).json({ error: "Please fill all the fields" });
   }
   User.findOne({ email: email }).then((savedUser) => {
     if (savedUser) {
@@ -50,7 +50,8 @@ router.post("/signin", (req, res) => {
         bcrypt.compare(password,savedUser.password).then((domatch) => {
             if(domatch) {
             const token = jwt.sign({_id: savedUser._id}, JWT_SECRET)
-            res.json({token})
+            const {id,name,email} = savedUser
+            res.json({token, user:{id,name,email}})
             }else{
                 return  res.status(422).json({error: 'Invalid email or password'})
             }
